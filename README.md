@@ -2,64 +2,105 @@
   <img height="140" src="https://raw.githubusercontent.com/dotnetcore/CAP/master/docs/content/img/logo.svg" alt="CAP Logo">
 </p>
 
-# CAP 　　　　　　　　　　　　　　　　　　　　[中文](https://github.com/dotnetcore/CAP/blob/master/README.zh-cn.md)
+# DotNetCore.CAP — Estudo e Documentação
 
-[![Docs & Dashboard](https://github.com/dotnetcore/CAP/actions/workflows/deploy-docs-and-dashboard.yml/badge.svg?branch=master)](https://github.com/dotnetcore/CAP/actions/workflows/deploy-docs-and-dashboard.yml)
+[![Build](https://github.com/dotnetcore/CAP/actions/workflows/deploy-docs-and-dashboard.yml/badge.svg?branch=master)](https://github.com/dotnetcore/CAP/actions/workflows/deploy-docs-and-dashboard.yml)
 [![AppVeyor](https://ci.appveyor.com/api/projects/status/v8gfh6pe2u2laqoa/branch/master?svg=true)](https://ci.appveyor.com/project/yang-xiaodong/cap/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/DotNetCore.CAP.svg)](https://www.nuget.org/packages/DotNetCore.CAP/)
-[![NuGet Preview](https://img.shields.io/nuget/vpre/DotNetCore.CAP.svg?label=nuget-pre)](https://www.nuget.org/packages/DotNetCore.CAP/)
-[![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dotnetcore/CAP/master/LICENSE.txt)
+[![Licença MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dotnetcore/CAP/master/LICENSE.txt)
 
-CAP is a .NET library that provides a lightweight, easy-to-use, and efficient solution for distributed transactions and event bus integration.
 
-When building SOA or Microservice-based systems, services often need to be integrated via events. However, simply using a message queue cannot guarantee reliability. CAP leverages a local message table, integrated with your current database, to solve exceptions that can occur during distributed system communications. This ensures that event messages are never lost.
+>
+> **Documentação técnica detalhada:** [`docs/`](./docs/)
 
-You can also use CAP as a standalone EventBus. It offers a simplified approach to event publishing and subscribing without requiring you to inherit or implement any specific interfaces.
+---
 
-## Key Features
+## O que é o CAP?
 
-*   **Core Functionality**
-    *   **Distributed Transactions**: Guarantees data consistency across microservices using a local message table (Outbox Pattern).
-    *   **Event Bus**: High-performance, lightweight event bus for decoupled communication.
-    *   **Guaranteed Delivery**: Ensures messages are never lost, with automatic retries for failed messages.
+CAP é uma biblioteca .NET que oferece uma solução leve, fácil de usar e de alto desempenho para **transações distribuídas** e **integração via Event Bus**.
 
-*   **Advanced Messaging**
-    *   **Delayed Messages**: Native support for publishing messages with a delay, without relying on message queue features.
-    *   **Flexible Subscriptions**: Supports attribute-based, wildcard (`*`, `#`), and partial topic subscriptions.
-    *   **Consumer Groups & Fan-Out**: Easily implement competing consumer or fan-out patterns for load balancing or broadcasting.
-    *   **Parallel & Serial Processing**: Configure consumers for high-throughput parallel processing or ordered sequential execution.
-    *   **Backpressure Mechanism**: Automatically manages processing speed to prevent memory overload (OOM) under high load.
+Em arquiteturas de microsserviços, a comunicação entre serviços via eventos é essencial — mas simplesmente usar uma fila de mensagens não garante a consistência dos dados. Uma publicação pode falhar na metade do processo, deixando o sistema em um estado inconsistente.
 
-*   **Extensibility & Integration**
-    *   **Pluggable Architecture**: Supports a wide range of message queues (RabbitMQ, Kafka, Azure Service Bus, etc.) and databases (SQL Server, PostgreSQL, MongoDB, etc.).
-    *   **Heterogeneous Systems**: Provides mechanisms to integrate with non-CAP or legacy systems.
-    *   **Customizable Filters & Serialization**: Intercept the processing pipeline with custom filters and support various serialization formats.
+O CAP resolve esse problema integrando uma **tabela de mensagens local** (local message table) ao banco de dados da aplicação — uma implementação do **Outbox Pattern**. Com isso, a gravação no banco e a publicação do evento são parte da mesma transação ACID, garantindo que **nenhuma mensagem seja perdida**.
 
-*   **Monitoring & Observability**
-    *   **Real-time Dashboard**: A built-in web dashboard to monitor messages, view status, and manually retry.
-    *   **Service Discovery**: Integrates with Consul and Kubernetes for node discovery in a distributed environment.
-    *   **OpenTelemetry Support**: Built-in instrumentation for distributed tracing, providing end-to-end visibility.
+Além disso, o CAP pode ser usado como um **Event Bus standalone**, tornando a publicação e assinatura de eventos mais simples sem a necessidade de herdar interfaces complexas.
 
-## Architecture Overview
+---
 
-![CAP Architecture](https://raw.githubusercontent.com/dotnetcore/CAP/master/docs/content/img/architecture-new.png)
+## Por que estudar esse projeto?
 
-> CAP implements the **Outbox Pattern** as described in the [eShop on .NET ebook](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/subscribe-events#designing-atomicity-and-resiliency-when-publishing-to-the-event-bus).
+Quando comecei a explorar microsserviços, percebi que um dos problemas mais sutis e difíceis de debugar é justamente a **inconsistência eventual causada por falhas parciais na comunicação entre serviços**. O CAP endereça esse problema de forma elegante e pragmática.
 
-## Getting Started
+Meus objetivos de aprendizado com este repositório:
 
-### 1. Installation
+- Entender o **Outbox Pattern** na prática e como ele garante consistência
+- Ver como um **Event Bus** é implementado sobre diferentes message brokers (RabbitMQ, Kafka, etc.)
+- Explorar a integração do CAP com **Entity Framework** e **ADO.NET**
+- Estudar o **dashboard integrado** para monitoramento de mensagens
+- Analisar a arquitetura extensível via plugins de transporte e armazenamento
 
-Install the main CAP package into your project using NuGet.
+> Para a análise arquitetural detalhada, veja [`docs/architecture.md`](./docs/architecture.md).
+
+---
+
+## Funcionalidades Principais
+
+### Core
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Transações Distribuídas** | Garante consistência entre microsserviços via tabela de mensagens local (Outbox Pattern) |
+| **Event Bus** | Bus de eventos de alto desempenho para comunicação desacoplada |
+| **Entrega Garantida** | Mensagens nunca são perdidas; falhas disparam retentativas automáticas |
+
+### Mensageria Avançada
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Mensagens com Atraso** | Publicação de mensagens com delay nativo, sem depender de features do broker |
+| **Subscrições Flexíveis** | Suporta atributos, wildcards (`*`, `#`) e partial topic subscriptions |
+| **Consumer Groups / Fan-Out** | Implementa padrões de competing consumers ou broadcast de forma simples |
+| **Processamento Paralelo e Serial** | Configure consumidores para alto throughput ou execução ordenada |
+| **Backpressure** | Controle automático de velocidade de processamento para evitar OOM |
+
+### Extensibilidade
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Arquitetura Plugável** | Suporte a múltiplos brokers (RabbitMQ, Kafka, Azure Service Bus...) e bancos (SQL Server, PostgreSQL, MongoDB...) |
+| **Sistemas Heterogêneos** | Mecanismos para integração com sistemas legados ou sem CAP |
+| **Filtros e Serialização** | Pipeline customizável com filtros e suporte a diferentes formatos de serialização |
+
+### Observabilidade
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Dashboard em Tempo Real** | Interface web para monitorar mensagens, status e acionar retentativas manualmente |
+| **Service Discovery** | Integração com Consul e Kubernetes para descoberta de nós em ambientes distribuídos |
+| **OpenTelemetry** | Instrumentação nativa para distributed tracing end-to-end |
+
+---
+
+## Visão Geral da Arquitetura
+
+![Arquitetura CAP](https://raw.githubusercontent.com/dotnetcore/CAP/master/docs/content/img/architecture-new.png)
+
+O CAP implementa o **Outbox Pattern**: ao publicar um evento, a mensagem é primeiro gravada em uma tabela local no banco de dados, dentro da mesma transação do negócio. Um processo em background então lê essa tabela e encaminha as mensagens ao broker. Isso elimina o problema clássico de *dual-write* (escrever no banco e no broker de forma independente).
+
+> Para um detalhamento completo do fluxo, veja [`docs/event-flow.md`](./docs/event-flow.md).
+> Para o aprofundamento no padrão Outbox, veja [`docs/outbox-pattern.md`](./docs/outbox-pattern.md).
+
+---
+
+## Instalação
+
+### Pacote Principal
 
 ```shell
 PM> Install-Package DotNetCore.CAP
 ```
 
-Next, install the desired transport and storage providers.
-
-**Transports (Message Queues):**
+### Transportes (Message Brokers)
 
 ```shell
 PM> Install-Package DotNetCore.CAP.Kafka
@@ -71,59 +112,59 @@ PM> Install-Package DotNetCore.CAP.RedisStreams
 PM> Install-Package DotNetCore.CAP.Pulsar
 ```
 
-**Storage (Databases):**
+### Armazenamento (Bancos de Dados)
 
-The event log table will be integrated into the database you select.
+A tabela de log de eventos será criada e integrada ao banco que você escolher.
 
 ```shell
 PM> Install-Package DotNetCore.CAP.SqlServer
 PM> Install-Package DotNetCore.CAP.MySql
 PM> Install-Package DotNetCore.CAP.PostgreSql
-PM> Install-Package DotNetCore.CAP.MongoDB     // Requires MongoDB 4.0+ cluster
+PM> Install-Package DotNetCore.CAP.MongoDB    // Requer MongoDB 4.0+ em cluster
 ```
 
-### 2. Configuration
+---
 
-Configure CAP in your `Startup.cs` or `Program.cs`.
+## Configuração
+
+Configure o CAP no `Program.cs` (ou `Startup.cs` em projetos mais antigos):
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    // If you are using EF as the ORM
-    services.AddDbContext<AppDbContext>(); 
-    
-    // If you are using MongoDB
-    services.AddSingleton<IMongoClient>(new MongoClient("..."));
+    // Contexto do Entity Framework (se aplicável)
+    services.AddDbContext<AppDbContext>();
 
     services.AddCap(x =>
     {
-        // Using Entity Framework
-        // CAP can auto-discover the connection string
+        // Usando Entity Framework — o CAP detecta a connection string automaticamente
         x.UseEntityFramework<AppDbContext>();
 
-        // Using ADO.NET
-        x.UseSqlServer("Your ConnectionString");
-        x.UseMySql("Your ConnectionString");
-        x.UsePostgreSql("Your ConnectionString");
+        // Usando ADO.NET diretamente
+        x.UseSqlServer("sua-connection-string");
+        x.UseMySql("sua-connection-string");
+        x.UsePostgreSql("sua-connection-string");
 
-        // Using MongoDB (requires a 4.0+ cluster)
-        x.UseMongoDB("Your ConnectionString");
+        // Usando MongoDB (requer cluster 4.0+)
+        x.UseMongoDB("sua-connection-string");
 
-        // Choose your message transport
-        x.UseRabbitMQ("HostName");
-        x.UseKafka("ConnectionString");
-        x.UseAzureServiceBus("ConnectionString");
+        // Escolha o transporte de mensagens
+        x.UseRabbitMQ("hostname");
+        x.UseKafka("connection-string");
+        x.UseAzureServiceBus("connection-string");
         x.UseAmazonSQS(options => { /* ... */ });
-        x.UseNATS("ConnectionString");
-        x.UsePulsar("ConnectionString");
-        x.UseRedisStreams("ConnectionString");
+        x.UseNATS("connection-string");
+        x.UsePulsar("connection-string");
+        x.UseRedisStreams("connection-string");
     });
 }
 ```
 
-### 3. Publish Messages
+---
 
-Inject `ICapPublisher` into your controller or service to publish events. As of version 7.0, you can also publish delayed messages.
+## Publicando Mensagens
+
+Injete `ICapPublisher` no seu controller ou serviço. A partir da versão 7.0, mensagens com atraso também são suportadas.
 
 ```csharp
 public class PublishController : Controller
@@ -135,195 +176,203 @@ public class PublishController : Controller
         _capBus = capPublisher;
     }
 
+    // Publicando dentro de uma transação ADO.NET (auto-commit)
     [Route("~/adonet/transaction")]
-    public IActionResult AdonetWithTransaction()
+    public IActionResult AdonetComTransacao()
     {
         using (var connection = new MySqlConnection(ConnectionString))
+        using (var transaction = connection.BeginTransaction(_capBus, autoCommit: true))
         {
-            // Start a transaction with auto-commit enabled
-            using (var transaction = connection.BeginTransaction(_capBus, autoCommit: true))
-            {
-                // Your business logic...
-                _capBus.Publish("xxx.services.show.time", DateTime.Now);
-            }
+            // Lógica de negócio...
+            _capBus.Publish("pedidos.criado", DateTime.Now);
         }
         return Ok();
     }
 
+    // Publicando dentro de uma transação Entity Framework (auto-commit)
     [Route("~/ef/transaction")]
-    public IActionResult EntityFrameworkWithTransaction([FromServices] AppDbContext dbContext)
+    public IActionResult EFComTransacao([FromServices] AppDbContext dbContext)
     {
         using (var trans = dbContext.Database.BeginTransaction(_capBus, autoCommit: true))
         {
-            // Your business logic...
-            _capBus.Publish("xxx.services.show.time", DateTime.Now);
+            // Lógica de negócio...
+            _capBus.Publish("pedidos.criado", DateTime.Now);
         }
         return Ok();
     }
 
+    // Publicando mensagem com atraso de 30 segundos
     [Route("~/publish/delay")]
-    public async Task<IActionResult> PublishWithDelay()
+    public async Task<IActionResult> PublicarComAtraso()
     {
-        // Publish a message with a 30-second delay
-        await _capBus.PublishDelayAsync(TimeSpan.FromSeconds(30), "xxx.services.show.time", DateTime.Now);
+        await _capBus.PublishDelayAsync(TimeSpan.FromSeconds(30), "pedidos.criado", DateTime.Now);
         return Ok();
     }
 }
 ```
 
-### 4. Subscribe to Messages
+> **Ponto chave:** ao usar `BeginTransaction`, a mensagem só é enfileirada no broker **depois** que a transação do banco de dados é confirmada. É essa atomicidade que garante a consistência.
 
-#### In a Controller Action
+---
 
-Add the `[CapSubscribe]` attribute to a controller action to subscribe to a topic.
+## Assinando Mensagens
+
+### Em um Controller
+
+Adicione o atributo `[CapSubscribe]` diretamente na action:
 
 ```csharp
-public class SubscriptionController : Controller
+public class PedidosController : Controller
 {
-    [CapSubscribe("xxx.services.show.time")]
-    public void CheckReceivedMessage(DateTime messageTime)
+    [CapSubscribe("pedidos.criado")]
+    public void AoReceberPedido(DateTime horaDoCriação)
     {
-        Console.WriteLine($"Message received: {messageTime}");
+        Console.WriteLine($"Pedido recebido em: {horaDoCriação}");
     }
 }
 ```
 
-#### In a Business Logic Service
+### Em um Serviço de Negócio
 
-If your subscriber is not in a controller, the class must implement the `ICapSubscribe` interface.
+Se o subscriber estiver fora de um controller, a classe deve implementar `ICapSubscribe`:
 
 ```csharp
-namespace BusinessCode.Service
+namespace MeuApp.Servicos
 {
-    public interface ISubscriberService
+    public interface IServicoDePedidos
     {
-        void CheckReceivedMessage(DateTime datetime);
+        void ProcessarPedido(DateTime horaDoCriação);
     }
 
-    public class SubscriberService : ISubscriberService, ICapSubscribe
+    public class ServicoDePedidos : IServicoDePedidos, ICapSubscribe
     {
-        [CapSubscribe("xxx.services.show.time")]
-        public void CheckReceivedMessage(DateTime datetime)
+        [CapSubscribe("pedidos.criado")]
+        public void ProcessarPedido(DateTime horaDoCriação)
         {
-            // Handle the message
+            // Processar o pedido recebido
         }
     }
 }
 ```
 
-Remember to register your service in `Startup.cs`:
+Registre o serviço no `ConfigureServices`:
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddTransient<ISubscriberService, SubscriberService>();
-
-    services.AddCap(x =>
-    {
-        // ...
-    });
-}
+services.AddTransient<IServicoDePedidos, ServicoDePedidos>();
+services.AddCap(x => { /* ... */ });
 ```
 
-#### Asynchronous Subscriptions
-
-For async operations, your subscription method should return a `Task` and can accept a `CancellationToken`.
+### Assinatura Assíncrona
 
 ```csharp
-public class AsyncSubscriber : ICapSubscribe
+public class AssinantesAssincronos : ICapSubscribe
 {
-    [CapSubscribe("topic.name")]
-    public async Task ProcessAsync(Message message, CancellationToken cancellationToken)
+    [CapSubscribe("pedidos.criado")]
+    public async Task ProcessarAsync(Mensagem msg, CancellationToken cancellationToken)
     {
-        await SomeOperationAsync(message, cancellationToken);
+        await AlgumaOperacaoAsync(msg, cancellationToken);
     }
 }
 ```
 
-#### Partial Topic Subscriptions
+### Partial Topic Subscriptions
 
-Group topic subscriptions by defining a partial topic on the class level. The final topic will be a combination of the class-level and method-level topics. In this example, the `Create` method subscribes to `customers.create`.
+Agrupe tópicos em nível de classe para organizar subscribers relacionados:
 
 ```csharp
-[CapSubscribe("customers")]
-public class CustomersSubscriberService : ICapSubscribe
+[CapSubscribe("clientes")]
+public class ClientesSubscriber : ICapSubscribe
 {
-    [CapSubscribe("create", isPartial: true)]
-    public void Create(Customer customer)
-    {
-        // ...
-    }
+    // Escuta o tópico "clientes.criar"
+    [CapSubscribe("criar", isPartial: true)]
+    public void AoCriar(Cliente cliente) { /* ... */ }
+
+    // Escuta o tópico "clientes.atualizar"
+    [CapSubscribe("atualizar", isPartial: true)]
+    public void AoAtualizar(Cliente cliente) { /* ... */ }
 }
 ```
 
-#### Subscription Groups
+### Grupos de Subscribers (Consumer Groups)
 
-Subscription groups are similar to consumer groups in Kafka. They allow you to load-balance message processing across multiple instances of a service.
+Similar aos consumer groups do Kafka. Permitem balancear a carga entre múltiplas instâncias de um serviço ou implementar broadcast.
 
-By default, CAP uses the assembly name as the group name. If multiple subscribers in the same group subscribe to the same topic, only one will receive the message (competing consumers). If they are in different groups, all will receive the message (fan-out).
-
-You can specify a group directly in the attribute:
+- **Mesmo grupo:** apenas um consumidor recebe a mensagem (competing consumers)
+- **Grupos diferentes:** todos os consumidores recebem (fan-out / broadcast)
 
 ```csharp
-[CapSubscribe("xxx.services.show.time", Group = "group1")]
-public void ShowTime1(DateTime datetime)
-{
-    // ...
-}
+// Apenas um dos dois handlers será executado para cada mensagem
+[CapSubscribe("pedidos.criado", Group = "servico-de-estoque")]
+public void AtualizarEstoque(DateTime data) { /* ... */ }
 
-[CapSubscribe("xxx.services.show.time", Group = "group2")]
-public void ShowTime2(DateTime datetime)
-{
-    // ...
-}
+[CapSubscribe("pedidos.criado", Group = "servico-de-notificacao")]
+public void EnviarNotificacao(DateTime data) { /* ... */ }
 ```
 
-You can also set a default group name in the configuration:
+Configurando o grupo padrão:
 
 ```csharp
 services.AddCap(x =>
 {
-    x.DefaultGroup = "my-default-group";  
+    x.DefaultGroup = "meu-servico-default";
 });
 ```
 
-### Azure Service Bus Emulator Support
+---
 
-The [Azure Service Bus Emulator](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) uses separate ports for AMQP messaging (5672) and the HTTP Admin API (5300). Because CAP uses a single connection string for both the `ServiceBusClient` (AMQP) and the `ServiceBusAdministrationClient` (HTTP), it cannot target both ports simultaneously.
+## Dashboard
 
-To work around this, set `AutoProvision` to `false` to skip automatic creation of topics, subscriptions, and rules via the Admin API. You must pre-create the required entities in the emulator's configuration instead.
+O CAP inclui um dashboard web para monitoramento em tempo real das mensagens publicadas e recebidas, incluindo status de entrega e opção de reenvio manual.
+
+```shell
+PM> Install-Package DotNetCore.CAP.Dashboard
+```
+
+Disponível por padrão em `http://localhost:xxx/cap`. Para customizar o caminho:
+
+```csharp
+services.AddCap(x =>
+{
+    x.UseDashboard(opt => { opt.PathMatch = "/meu-dashboard"; });
+});
+```
+
+### Service Discovery para Dashboard Distribuído
+
+- **Consul:** [Ver documentação](https://cap.dotnetcore.xyz/user-guide/en/monitoring/consul/)
+- **Kubernetes:** Instale `DotNetCore.CAP.Dashboard.K8s` — [Ver documentação](https://cap.dotnetcore.xyz/user-guide/en/monitoring/kubernetes/)
+
+---
+
+## Suporte ao Azure Service Bus Emulator
+
+O [emulador do Azure Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) usa portas separadas para AMQP (5672) e a API HTTP de administração (5300). Como o CAP usa uma única connection string, é necessário desabilitar o `AutoProvision` e criar as entidades manualmente:
 
 ```csharp
 services.AddCap(x =>
 {
     x.UseAzureServiceBus(opt =>
     {
-        opt.ConnectionString = "Endpoint=sb://localhost;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;";
-        opt.AutoProvision = false;
+        opt.ConnectionString = "Endpoint=sb://localhost;SharedAccessKeyName=...;UseDevelopmentEmulator=true;";
+        opt.AutoProvision = false; // Entidades devem existir previamente
     });
 });
 ```
 
-> **Note:** When `AutoProvision` is `false`, topics, subscriptions, and subscription filter rules must already exist before the application starts. This option is also useful when entities are managed externally (e.g., via Infrastructure as Code).
+---
 
-## Dashboard
+## Documentação Técnica
 
-CAP provides a real-time dashboard to view sent and received messages and their status.
+Para aprofundamento técnico na arquitetura e nos padrões utilizados:
 
-```shell
-PM> Install-Package DotNetCore.CAP.Dashboard
-```
+| Documento | Descrição |
+|---|---|
+| [`docs/architecture.md`](./docs/architecture.md) | Visão geral da arquitetura, componentes e motivações de design |
+| [`docs/event-flow.md`](./docs/event-flow.md) | Fluxo completo de um evento, do publish ao consume |
+| [`docs/outbox-pattern.md`](./docs/outbox-pattern.md) | Aprofundamento no Outbox Pattern implementado pelo CAP |
 
-The dashboard is accessible by default at `http://localhost:xxx/cap`. You can customize the path via options: `x.UseDashboard(opt => { opt.PathMatch = "/my-cap"; });`.
+---
 
-For distributed environments, the dashboard supports service discovery to view data from all nodes.
-- **Consul:** [View Consul config docs](https://cap.dotnetcore.xyz/user-guide/en/monitoring/consul/)
-- **Kubernetes:** Use the `DotNetCore.CAP.Dashboard.K8s` package. [View Kubernetes config docs](https://cap.dotnetcore.xyz/user-guide/en/monitoring/kubernetes/)
-
-## Contribute
-
-We welcome contributions! Participating in discussions, reporting issues, and submitting pull requests are all great ways to help. Please read our [contributing guidelines](CONTRIBUTING.md) (we can create this file if it doesn't exist) to get started.
-
-### License
-
-CAP is licensed under the [MIT License](https://github.com/dotnetcore/CAP/blob/master/LICENSE.txt).
+## Licença
+> **Nota:** Este repositório é um fork do projeto original [dotnetcore/CAP](https://github.com/dotnetcore/CAP). Estou utilizando-o como base de estudo para entender na prática como implementar **mensageria orientada a eventos** e **transações distribuídas** em ecossistemas .NET. A documentação abaixo foi escrita por mim em português, combinando o conteúdo original com minhas anotações de aprendizado.
+Este repositório é um fork. O projeto original é licenciado sob a [Licença MIT](https://github.com/dotnetcore/CAP/blob/master/LICENSE.txt).
